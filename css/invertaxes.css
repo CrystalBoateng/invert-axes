@@ -2,11 +2,11 @@
 *== General
 ************************************* */
 	body {
-	    background-color: #145d94;
-	    color: #afabab;
-	    font-family: Tahoma, Geneva, sans-serif;
-	    font-size: 13pt;
-	    width: 100%;
+		background-color: #145d94;
+		color: #afabab;
+		font-family: Tahoma, Geneva, sans-serif;
+		font-size: 13pt;
+		width: 100%;
 	}
 	.restricted-width {
 		width: 768px;
@@ -16,7 +16,7 @@
 		box-shadow: 2px 2px 5px;
 	}
 	.monospaced {
-		font-family: "Lucida Console", Monaco, monospace;
+		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
 	}
 	.icon {
 		cursor: pointer;
@@ -48,7 +48,7 @@
 		border-radius: 20px;
 		border: none;
 		display: block;
-		font-family: "Lucida Console", Monaco, monospace;
+		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
 		font-size: 14pt;
 		height: 216px; /*without padding, height is 240px*/
 		margin: 0 auto;
@@ -70,27 +70,39 @@
 	}
 	form {
 		display: inline;
+		margin-left: 13px;
 	}
 	form button, form input {
-	    background-color: #3a3a3a;
-	    border-radius: 6px;
-	    border: 2px solid #afabab;
-	    color: #afabab;
-	    font-family: "Lucida Console", Monaco, monospace;
-	    font-size: 12pt;
-	    text-align: center;
-	    width: 75px;
+		background-color: #3a3a3a;
+		border-radius: 6px;
+		border: 2px solid #afabab;
+		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
+		font-size: 12pt;
+		text-align: center;
+		width: 87px;
 	}
 	form button {
-	    cursor: pointer;
+		cursor: pointer;
 	}
-	/*delimiter which was last selected: 
-		border: 2px solid white;
-		box-shadow: 0 0 25px;
+	.unselected-delimiter {
+		box-shadow: none;
+		color: #afabab;
+	}
+	.selected-delimiter-auto {
+		box-shadow: 0 0 25px white;
 		color: white;
-	*/
+	}
+	.selected-delimiter-manual {
+		border: 2px solid white;
+		box-shadow: 0 0 25px black;
+		color: white;
+	}
+	#delimiter_commaSpaces {
+		margin-left: 105px;
+	}
 	.red-error {
 		color: red;
+		display: none;
 		margin: 1em 13px;
 	}
 	#middle-block {

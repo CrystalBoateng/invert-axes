@@ -8,7 +8,7 @@
 
 	<body>
 		<!--
-		Button icons were designed by Anastasya Bolshakova and originally published under a Creative Commons (Attribution 3.0 Unported) license, with the title "Simple Files". 
+		Button icons were designed by Anastasya Bolshakova and originally published under a Creative Commons (Attribution 3.0 Unported) license, with the title "Simple Files".
 		https://www.iconfinder.com/iconsets/simple-files-1
 		https://creativecommons.org/licenses/by/3.0
 		The icons have been adapted for this repository.
@@ -17,7 +17,7 @@
 			<img id="logo" alt-"Invert Axes: Invert the axs of a spredsheet." src="images/logo.png" />
 			<div id="instructions">
 				<ol>
-					<li>Paste values into the white box.</li>
+					<li>Paste values or arrays into the white box.</li>
 					<li>Click "invert."</li>
 					<li>Copy the inverted data into your clipboard.</li>
 				</ol>
@@ -25,15 +25,23 @@
 
 			<div id="left-block">
 				<!-- Referenced this webpage to prevent textareas from wrapping: https://css-tricks.com/textarea-tricks/#article-header-id-7 -->
-				<textarea class="text-area" id="user-input" wrap="off"></textarea>
+				<textarea class="text-area" id="user-input" wrap="off" 
+placeholder="example:
+
+ID#	MAKE	MODEL
+0001	toyota	camry
+0002	ford	focus
+0003	honda	civic">
+				</textarea>
 				<span class="aligned-with-textarea">
 					Delimiter:
 					<form>
-						<button>tabs</button>
-						<button>commas</button>
-						<input type="text" name="custom_delimiter" value="custom">
+						<button class="unselected-delimiter" id="delimiter_tabs">tab</button>
+						<button class="unselected-delimiter" id="delimiter_commas">comma</button>
+						<button class="unselected-delimiter" id="delimiter_commaSpaces">comma+'_'</button>
+						<input class="unselected-delimiter" type="text" id="delimiter_custom" placeholder="custom">
 					</form>
-					<div class="red-error" id="inconsistent-number-of-columns">Error: The following rows have an inconsistent number of columns:</div>
+					<div class="red-error" id="inconsistent-number-of-columns">Error: The following rows have an unusual number of columns:</div>
 					<div class="red-error" id="input-is-empty">Error: There is no content in the input field.</div>
 					<div class="red-error" id="array-parse-failure">Note: Input data resembles an array of arrays, but could not be parsed as one.</div>
 					<div class="red-error" id="empty-custom">Error: The 'Custom' delimiter has been selected, but no custom characters were entered.</div>
@@ -73,6 +81,7 @@
 
 
 
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="js/invertaxes.js"></script>
 	</body>
 </html>

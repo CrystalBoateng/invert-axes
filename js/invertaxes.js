@@ -1,14 +1,13 @@
-"use strict";
-console.clear();
-//// testing values
-	// let inputString = document.getElementById("myTextArea").value
-	let inputString = "1, 2, 3\n4, 5, 6\n7, 8, 9\n10,11 12";
-	// let inputString = "[[1,2,3],\n	[4, 5],\n	[7, 8, 9],\n	[7, 8, 9]]";
+// External dependecies: jQuery
 
-// declare global variables
-let autoDelimiter = true;
-let delimiter;
-let arrayNotation;
+"use strict"; console.clear();
+
+// Global variables
+// let inputString = $("#user-input").value; // a string
+let autoDelimiter = true; // a boolean
+let delimiter; // a string
+let arrayNotation; // a boolean
+let inputString = "1, 2, 3\n4, 5, 6\n7, 8, 9\n10,11 12";
 
 function countElements(myArray) {
 	if (myArray)
@@ -16,71 +15,78 @@ function countElements(myArray) {
 	else
 		return 0;
 }
-function highlightFormElement(element, auto) { // INCOMPLETE
-	// let domForm = document.body.form;
-	// // Unhighlight every form element (**REQUIREMENT: DOM Traversal)
-	// for (var i = 0; i < domForm.childNodes.length; i++) {
-	// 	domForm.style.border = "2px solid #afabab";
-	// 	domForm.style.boxShadow = "none";
-	// 	domForm.style.color = "#afabab";
-	// }
-	// // highlight one form element
-	// element.style.border = "2px solid white;";
-	// element.style.boxShadow = "0 0 25px;";
-	// element.style.color = "#fff";
+function highlightFormElement(elementID, auto) {
+	// Unhighlight every form element (**REQUIREMENT: DOM Traversal)
+	let domForm = document.body.children[0].children[2].children[1].children[0];
+	for (let i = 0; i < domForm.childNodes.length; i++) {
+		let domNode = domForm.childNodes[i];
+		$(domNode).removeClass("selected-delimiter-auto");
+		$(domNode).removeClass("selected-delimiter-manual");
+	}
+	// highlight one form element
+	if (auto)
+		$("#"+elementID).addClass("selected-delimiter-auto");
+	else
+		$("#"+elementID).addClass("selected-delimiter-manual");
 }
-function selectDelimiter(input) {
+function autoSelectDelimiter(input) {
 	if (autoDelimiter) {
-		return "," // INCOMPLETE
-		// // Derive the delimiter based on string entered by user.
-		// // Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
-		// let tabs = {
-		// 	count: countElements(input.match(/\t/g)), // count instances of \t,
-		// 	elementID: document.getElementsByTagName("form")[0],
-		// 	value: '\t'
-		// }
-		// let commas = {
-		// 	count: countElements(input.match(/,/g)), // count instances of ,
-		// 	elementID: document.getElementsByTagName("form")[1],
-		// 	value: ','
-		// }
-		// let commaSpaces = {
-		// 	count: countElements(input.match(/, /g)), // count instances of , 
-		// 	elementID: document.getElementsByTagName("form")[2],
-		// 	value: ', '
-		// }
-		// // don't double-count commaSpaces
-		// commas.count = commas.count - commaSpaces.count; 
-		// console.log("Found the following potential delimiters:\n\t %s tab(s), %s comma(s), and %s comma(s) followed by spaces", tabs.count, commas.count, commaSpaces.count);
-		// // If any delimiter is twice as common as the other two, select it.
-		// let totalDelim = tabs.count + commas.count + commaSpaces.count;
-		// tabs.frequency = tabs.count / totalDelim;
-		// commas.frequency = commas.count / totalDelim;
-		// commaSpaces.frequency = commaSpaces.count / totalDelim;
-
-		// let potentialDelimiters = [tabs, commas, commaSpaces];
-		// for (let i = 0; i < potentialDelimiters.length; i++) {
-		// 	let elem = potentialDelimiters[i]
-		// 	if (elem.frequency >= 0.6) {
-		// 		highlightFormElement(elem, autoDelimiter); // Show user current delim
-		// 		return elem.value;
-		// 	}
-		// }
-		// // Notify the user if no delimiter had a frequency > 60%.
-		// console.log("Red-Error: The delimiter could not be automatically determined. Please select a delimiter manually.");
-		// return false;
+		// Derive the delimiter based on the string entered by user.
+		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
+		let tabs = {
+			count: countElements(input.match(/\t/g)), // count instances of \t,
+			elementID: 'delimiter_tabs',
+			value: '\t'
+		}
+		let commas = {
+			count: countElements(input.match(/,/g)), // count instances of ,
+			elementID: 'delimiter_commas',
+			value: ','
+		}
+		let commaSpaces = {
+			count: countElements(input.match(/, /g)), // count instances of , 
+			elementID: 'delimiter_commaSpaces',
+			value: ', '
+		}
+		// avoid double-counting commaSpaces
+		commas.count = commas.count - commaSpaces.count;
+		console.log("Found the following potential delimiters:\n\t %s tab(s), %s comma(s), and %s comma(s) followed by spaces", tabs.count, commas.count, commaSpaces.count);
+		// If any delimiter is ~twice as common as the others, select it.
+		let totalDelim = tabs.count + commas.count + commaSpaces.count;
+		tabs.ratio = tabs.count / totalDelim;
+		commas.ratio = commas.count / totalDelim;
+		commaSpaces.ratio = commaSpaces.count / totalDelim;
+		let commonDel = [tabs, commas, commaSpaces];
+		for (let i = 0; i < commonDel.length; i++) {
+			if (commonDel[i].ratio >= 0.6) {
+				highlightFormElement(commonDel[i].elementID, autoDelimiter); // Show user current delim
+				return commonDel[i].value;
+			}
+		}
+		// If no delimiter met that criterion, notify the user.
+		console.log("Red-Error: The delimiter could not be automatically determined. Please select a delimiter manually.");
+		return false;
 	}
 	else {
 		// Keep the user-selected delimiter from the DOM.
 		return delimiter;
 	}
 }
+function manualSelectDelimiter(buttonId) {
+	highlightFormElement(buttonId)
+	if (buttonId == 'delimiter_tabs') // hmm maybe just pass thw hwole object into the function
+		delimiter = '\t'
+	else if (buttonId == 'delimiter_commas')
+		delimiter = ','
+	else if (buttonId == 'delimiter_custom')
+		delimiter = $('#delimiter_custom').val();
+}
 let outputString;
 function resetRedErrors() {
-	//INCOMPLETE Hide all (previous) red-errors.
+	// $(".red-error").css("display","none")
 }
 function removeSmartQuotes(input) {
-	// Convert smart quotes to regular quotes 
+	// Convert smart quotes to regular quotes
 	let smartQuotes = [[/‘/g, "'"], [/’/g, "'"], [/“/g, '"'], [/”/g, '"']];
 	for (let i = 0; i < smartQuotes.length; i++) {
 		// Referenced this page when looking for a string method to replace multiple instances of a substring (rather than only the first instance): https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
@@ -101,9 +107,9 @@ function resemblesAnArray(input) {
 	if (bracketReturns &&
 		commas &&
 		returnOpens &&
-		bracketReturns > 2 &&
-		commas > 4 &&
-		returnOpens > 2
+		bracketReturns >= 2 &&
+		commas >= 4 &&
+		returnOpens >= 2
 	) {
 		console.log('Arrays detected. Found...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
 		return true;
@@ -112,9 +118,17 @@ function resemblesAnArray(input) {
 		return false;
 	}
 }
-function stringToArray(input, delim) {
+function stringToArray(input, delim, brackets) {
+	/* Takes a string. Returns an array of arrays. */
 	input = input.split("\n");
 	for (let i = 0; i < input.length; i++) {
+		// Remove trailing commas
+		if (input[i][input[i].length - 1] == ',')
+			input[i] = input[i].slice(0,-1);
+		// Removing enclosing brackets
+		if (brackets)
+			input[i] = input[i].slice(1,-1);
+		// Split the row string into an array
 		input[i] = input[i].split(delim);
 	}
 	return input;
@@ -123,14 +137,14 @@ function arrayToString(input, delim, outputAsArray) {
 	let stringToReturn = '';
 	let rowToSave = '';
 	for (let i = 0; i < input.length; i++) {
-		outputAsArray ? rowToSave = '[' : rowToSave = '';
+		rowToSave = outputAsArray ? '[' : '';
 		for (let j = 0; j < input[i].length; j++) {
 			if (j < input[i].length - 1) {
 				rowToSave += input[i][j] + delim;
 			} else {
 				// don't add a delimiter after the last element of the row.
-				outputAsArray ? 
-					rowToSave += input[i][j] + '],' 
+				outputAsArray ?
+					rowToSave += input[i][j] + '],'
 					: rowToSave += input[i][j];
 			}
 		}
@@ -142,7 +156,7 @@ function arrayToString(input, delim, outputAsArray) {
 		}
 	}
 	// If output should look like an array, remove the trailing comma.
-	 if (outputAsArray) 
+	 if (outputAsArray)
 		stringToReturn = stringToReturn.slice(0,-1);
 	return stringToReturn;
 }
@@ -154,7 +168,7 @@ function validateRowLengths(input, avgRowLen) {
             // add one to index because there is no line 0 in the white textarea.
 			badRows.push(i + 1);
 		}
-    } 
+    }
     if (badRows.length > 0) {
         // Correct the row to prevent the error from propogating to other rows.
         let replacementRow = [];
@@ -173,23 +187,25 @@ function validateRowLengths(input, avgRowLen) {
 }
 function invertAxes() {
 	resetRedErrors();
+	inputString = $("#user-input").val();
 	if (inputString) {
 		inputString = removeSmartQuotes(inputString);
-		console.log("--input:");
-		console.log(inputString);
-		delimiter = selectDelimiter(inputString);
-		if (!delimiter) 
+		// console.log("--input:");
+		// console.log(inputString);
+		delimiter = autoSelectDelimiter(inputString);
+		if (!delimiter)
 			return "Unclear delimiter.";
 		// Convert inputString to an array.
 		let inputArray;
 		arrayNotation = resemblesAnArray(inputString);
+		console.log(arrayNotation)
 		if (arrayNotation) {
 			try {
-				inputArray = JSON.parse(inputString);
+				inputArray = stringToArray(inputString,',',true);
 			}
 			catch (err) {
-				// console.log("Could not parse the data as an array of rows containing multiiple arrays of columns. Check the input data for possible syntax errors.");
-				// console.log("Red-Error Note: Input data resembles an array, but could not be parsed as one. ");
+				console.log("Could not parse the data as an array of rows containing multiiple arrays of columns. Check the input data for possible syntax errors.");
+				console.log("Red-Error Note: Input data resembles an array, but could not be parsed as one. ");
 				inputArray = stringToArray(inputString, delimiter);
 			}
 		} else {
@@ -215,11 +231,21 @@ function invertAxes() {
 			outputArray.push(outputRow);
 		}
 		outputString = arrayToString(outputArray, delimiter, arrayNotation);
-		return outputString;
-	} else
+		$("#user-output").val(outputString);
+	} else {
 		console.log("Red-Error there's no input content to parse.");
+		$("#user-output").val("");
+	}
 }
 
-let stringForHTML = invertAxes();
-console.log("--output:");
-console.log(stringForHTML);
+
+
+
+// Keyboard event handlers
+$("#user-input").keyup(invertAxes);
+$("#delimiter_custom").change(invertAxes);
+
+// Mouse event handlers
+$("#user-input").mouseup(invertAxes);
+$(".icon").mouseup(invertAxes);
+$(document).ready(invertAxes);
