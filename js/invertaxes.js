@@ -2,10 +2,23 @@
 
 "use strict"; console.clear();
 
+// Event handlers 
+/* (**REQUIREMENT: Capturing and handling events) */
+$(document).ready(invertAxes);
+// Keyboard event handlers
+$("#user-input").keyup(invertAxes);
+$("#delimiter_custom").change(invertAxes);
+// Mouse event handlers
+$("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
+$("#copy-button").click(copyToClipboard);
+$("#toggle-log").click(toggleLog);
+
+
 // Global variables
 let autoDelimiter = true; // a boolean
 let delimiter; // a string
 let arrayNotation; // a boolean
+let logMinimized = true; // a boolean
 
 function countElements(myArray) {
 	if (myArray)
@@ -239,21 +252,25 @@ function invertAxes() {
 function copyToClipboard() {
 	// Give the user feedback by showing a message
 	$("#copied-to-clipboard").toggle(10, function(){ // show div
-		$("#copied-to-clipboard").toggle(8000); // hide div
+		$("#copied-to-clipboard").toggle(4000); // hide div
 	});
 	// Copy the text in the output box, to the user's clipboard.
-	//Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
+	// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 	document.getElementById("user-output").select();
 	document.execCommand("copy");
 }
+function toggleLog() {
+	$("#log-wrapper").toggle(30,function(){
+		if (logMinimized) {
+			// Replace the maximize icon with minimize
+			$('<img id="log-button" class="icon" src="images/minimize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
+			logMinimized = false;
+		} else {
+			// Replace the minimize icon with maximize
+			$('<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
+			logMinimized = true;
+		}
+	})
+}
 
 
-
-/* (**REQUIREMENT: Capturing and handling events) */
-$(document).ready(invertAxes);
-// Keyboard event handlers
-$("#user-input").keyup(invertAxes);
-$("#delimiter_custom").change(invertAxes);
-// Mouse event handlers
-$("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
-$("#copy-button").click(copyToClipboard);

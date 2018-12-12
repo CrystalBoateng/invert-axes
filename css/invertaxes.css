@@ -174,13 +174,9 @@
 	}
 	#black-wrapper #log-wrapper {
 		background-color: #1d1d1d;
+		display: none;
 		min-width: 768px;
 		width: 100%;
-	}
-	@media only screen and (max-width: 768px) {
-		#black-wrapper #log-wrapper {
-			display: none;
-		}
 	}
 	#black-wrapper #log {
 		margin: 0 auto;
