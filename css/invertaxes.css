@@ -1,5 +1,5 @@
 /* ************************************
-*== General
+*== Global
 ************************************* */
 	body {
 		background-color: #145d94;
@@ -48,7 +48,6 @@
 		border-radius: 20px;
 		border: none;
 		display: block;
-		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
 		font-size: 14pt;
 		height: 216px; /*without padding, height is 240px*/
 		margin: 0 auto;
@@ -107,21 +106,27 @@
 	}
 	#middle-block {
 		float: left;
-		padding-top: 35px;
+		padding-top: 30px;
 		width: 68;
 	}
 	#middle-block img {
-		margin-bottom: 35px; 
+		margin-bottom: 24px; 
 	}
 	#right-block {
 		width: 350px;
 		float: left;
+	}
+	#right-block span {
+		display: block;
 	}
 	#user-output {
 		background-color: #5c5c5c;
 		box-shadow: inset 10px 10px 23pt -24pt #1d1d1d;
 		color: #ccc9c9;
 		margin-bottom: 15px;
+	}
+	#copied-to-clipboard {
+		display: none;
 	}
 	#gray-bottom-padding {
 		border: none;
@@ -163,6 +168,9 @@
 		background-color: #1d1d1d;
 		border-radius: 0 48px 0 0;
 		width: 90px;
+	}
+	#black-wrapper #toggle-log #log-button {
+		margin-left: 6px;
 	}
 	#black-wrapper #log-wrapper {
 		background-color: #1d1d1d;

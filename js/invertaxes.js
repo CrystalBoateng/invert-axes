@@ -3,11 +3,9 @@
 "use strict"; console.clear();
 
 // Global variables
-// let inputString = $("#user-input").value; // a string
 let autoDelimiter = true; // a boolean
 let delimiter; // a string
 let arrayNotation; // a boolean
-let inputString = "1, 2, 3\n4, 5, 6\n7, 8, 9\n10,11 12";
 
 function countElements(myArray) {
 	if (myArray)
@@ -16,7 +14,8 @@ function countElements(myArray) {
 		return 0;
 }
 function highlightFormElement(elementID, auto) {
-	// Unhighlight every form element (**REQUIREMENT: DOM Traversal)
+	// Unhighlight every form element 
+	/* (**REQUIREMENT: DOM Traversal) */
 	let domForm = document.body.children[0].children[2].children[1].children[0];
 	for (let i = 0; i < domForm.childNodes.length; i++) {
 		let domNode = domForm.childNodes[i];
@@ -33,6 +32,7 @@ function autoSelectDelimiter(input) {
 	if (autoDelimiter) {
 		// Derive the delimiter based on the string entered by user.
 		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
+		/* (**REQUIREMENT: Cretig and handling a data structure) */	
 		let tabs = {
 			count: countElements(input.match(/\t/g)), // count instances of \t,
 			elementID: 'delimiter_tabs',
@@ -87,6 +87,7 @@ function resetRedErrors() {
 }
 function removeSmartQuotes(input) {
 	// Convert smart quotes to regular quotes
+	/* (**REQUIREMENT: Form validation) */
 	let smartQuotes = [[/‘/g, "'"], [/’/g, "'"], [/“/g, '"'], [/”/g, '"']];
 	for (let i = 0; i < smartQuotes.length; i++) {
 		// Referenced this page when looking for a string method to replace multiple instances of a substring (rather than only the first instance): https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
@@ -96,6 +97,7 @@ function removeSmartQuotes(input) {
 }
 function resemblesAnArray(input) {
 	// Returns true if the string "input" resembles an array of arrays. Else, false.
+	/* (**REQUIREMENT: Form validation) */
 	let bracketReturns = input.match(/\]\n|\],\n/g); // find ]\n or ],\n
 	let commas = input.match(/,/g); // find ,
 	let returnOpens = input.match(/\n\[|\n\s\[/g); // find \n[ or \n\s[
@@ -161,6 +163,7 @@ function arrayToString(input, delim, outputAsArray) {
 	return stringToReturn;
 }
 function validateRowLengths(input, avgRowLen) {
+	/* (**REQUIREMENT: Form validation) */
     // If any rows are not the average length, inform the user.
     let badRows = [];
     for (let i = 0; i < input.length; i++) {
@@ -187,18 +190,15 @@ function validateRowLengths(input, avgRowLen) {
 }
 function invertAxes() {
 	resetRedErrors();
-	inputString = $("#user-input").val();
+	let inputString = $("#user-input").val();
 	if (inputString) {
 		inputString = removeSmartQuotes(inputString);
-		// console.log("--input:");
-		// console.log(inputString);
 		delimiter = autoSelectDelimiter(inputString);
 		if (!delimiter)
 			return "Unclear delimiter.";
 		// Convert inputString to an array.
 		let inputArray;
 		arrayNotation = resemblesAnArray(inputString);
-		console.log(arrayNotation)
 		if (arrayNotation) {
 			try {
 				inputArray = stringToArray(inputString,',',true);
@@ -219,7 +219,6 @@ function invertAxes() {
 			averageRowLength += inputArray[i].length;
 		averageRowLength = Math.round(averageRowLength / inputArray.length);
 			inputArray = validateRowLengths(inputArray, averageRowLength);
-
 		// invert the arrays
 		let outputArray = [];
 		let outputRow;
@@ -237,15 +236,24 @@ function invertAxes() {
 		$("#user-output").val("");
 	}
 }
+function copyToClipboard() {
+	// Give the user feedback by showing a message
+	$("#copied-to-clipboard").toggle(10, function(){ // show div
+		$("#copied-to-clipboard").toggle(8000); // hide div
+	});
+	// Copy the text in the output box, to the user's clipboard.
+	//Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
+	document.getElementById("user-output").select();
+	document.execCommand("copy");
+}
 
 
 
-
+/* (**REQUIREMENT: Capturing and handling events) */
+$(document).ready(invertAxes);
 // Keyboard event handlers
 $("#user-input").keyup(invertAxes);
 $("#delimiter_custom").change(invertAxes);
-
 // Mouse event handlers
-$("#user-input").mouseup(invertAxes);
-$(".icon").mouseup(invertAxes);
-$(document).ready(invertAxes);
+$("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
+$("#copy-button").click(copyToClipboard);
