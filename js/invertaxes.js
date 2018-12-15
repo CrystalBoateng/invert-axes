@@ -9,6 +9,7 @@ $(document).ready(invertAxes);
 $("#user-input").keyup(invertAxes);
 $("#delimiter_custom").change(invertAxes);
 // Mouse event handlers
+$("form").mouseup(manualSelectDelimiter).keyup(manualSelectDelimiter);
 $("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
 $("#copy-button").click(copyToClipboard);
 $("#toggle-log").click(toggleLog);
@@ -21,6 +22,50 @@ let arrayNotation; // a boolean
 let logMinimized = true; // a boolean
 
 // Receive data from user
+function autoSelectDelimiter(input) {
+	if (autoDelimiter) {
+		// Derive the delimiter based on the string entered by user.
+		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
+		/* (**REQUIREMENT: Creting and handling a data structure) */	
+		let tabs = {
+			count: countElements(input.match(/\t/g)), // count instances of \t,
+			elementID: 'delimiter_tabs',
+			value: '\t'
+		}
+		let commas = {
+			count: countElements(input.match(/,/g)), // count instances of ,
+			elementID: 'delimiter_commas',
+			value: ','
+		}
+		let commaSpaces = {
+			count: countElements(input.match(/, /g)), // count instances of , 
+			elementID: 'delimiter_commaSpaces',
+			value: ', '
+		}
+		// avoid double-counting commaSpaces
+		commas.count = commas.count - commaSpaces.count;
+		console.log("Found the following potential delimiters:\n\t %s tab(s), %s comma(s), and %s comma(s) followed by spaces", tabs.count, commas.count, commaSpaces.count);
+		// If any delimiter is ~twice as common as the others, select it.
+		let totalDelim = tabs.count + commas.count + commaSpaces.count;
+		tabs.ratio = tabs.count / totalDelim;
+		commas.ratio = commas.count / totalDelim;
+		commaSpaces.ratio = commaSpaces.count / totalDelim;
+		let commonDel = [tabs, commas, commaSpaces];
+		for (let i = 0; i < commonDel.length; i++) {
+			if (commonDel[i].ratio >= 0.6) {
+				highlightFormElement(commonDel[i].elementID, autoDelimiter); // Show user current delim
+				return commonDel[i].value;
+			}
+		}
+		// If no delimiter met that criterion, notify the user.
+		console.log("Red-Error: The delimiter could not be automatically determined. Please select a delimiter manually.");
+		return false;
+	}
+	else {
+		// Keep the user-selected delimiter from the DOM.
+		return delimiter;
+	}
+}
 function copyToClipboard() {
 	// Give the user feedback by showing the 'copied to clipboard' message.
 	$("#copied-to-clipboard").toggle(10, function(){ // show div
@@ -30,6 +75,11 @@ function copyToClipboard() {
 	// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 	document.getElementById("user-output").select();
 	document.execCommand("copy");
+}
+function delimFromDom(e) {
+	autoDelimiter = false;
+	// e.preventDefault();
+	// alert('working');
 }
 function invertAxes() {
 	resetRedErrors();
@@ -79,6 +129,7 @@ function invertAxes() {
 	}
 }
 function toggleLog() {
+	$("#black-wrapper").toggleClass("bw-minimized bw-maximized");
 	$("#log-wrapper").toggle(30,function(){
 		if (logMinimized) {
 			// Replace the maximize icon with minimize
@@ -91,6 +142,7 @@ function toggleLog() {
 		}
 	})
 }
+
 
 // Data validation and cleanup
 function arrayToString(input, delim, outputAsArray) {
@@ -120,64 +172,30 @@ function arrayToString(input, delim, outputAsArray) {
 		stringToReturn = stringToReturn.slice(0,-1);
 	return stringToReturn;
 }
-function autoSelectDelimiter(input) {
-	if (autoDelimiter) {
-		// Derive the delimiter based on the string entered by user.
-		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
-		/* (**REQUIREMENT: Cretig and handling a data structure) */	
-		let tabs = {
-			count: countElements(input.match(/\t/g)), // count instances of \t,
-			elementID: 'delimiter_tabs',
-			value: '\t'
-		}
-		let commas = {
-			count: countElements(input.match(/,/g)), // count instances of ,
-			elementID: 'delimiter_commas',
-			value: ','
-		}
-		let commaSpaces = {
-			count: countElements(input.match(/, /g)), // count instances of , 
-			elementID: 'delimiter_commaSpaces',
-			value: ', '
-		}
-		// avoid double-counting commaSpaces
-		commas.count = commas.count - commaSpaces.count;
-		console.log("Found the following potential delimiters:\n\t %s tab(s), %s comma(s), and %s comma(s) followed by spaces", tabs.count, commas.count, commaSpaces.count);
-		// If any delimiter is ~twice as common as the others, select it.
-		let totalDelim = tabs.count + commas.count + commaSpaces.count;
-		tabs.ratio = tabs.count / totalDelim;
-		commas.ratio = commas.count / totalDelim;
-		commaSpaces.ratio = commaSpaces.count / totalDelim;
-		let commonDel = [tabs, commas, commaSpaces];
-		for (let i = 0; i < commonDel.length; i++) {
-			if (commonDel[i].ratio >= 0.6) {
-				highlightFormElement(commonDel[i].elementID, autoDelimiter); // Show user current delim
-				return commonDel[i].value;
-			}
-		}
-		// If no delimiter met that criterion, notify the user.
-		console.log("Red-Error: The delimiter could not be automatically determined. Please select a delimiter manually.");
-		return false;
-	}
-	else {
-		// Keep the user-selected delimiter from the DOM.
-		return delimiter;
-	}
-}
 function countElements(myArray) {
 	if (myArray)
 		return myArray.length;
 	else
 		return 0;
 }
-function manualSelectDelimiter(buttonId) {
-	highlightFormElement(buttonId)
-	if (buttonId == 'delimiter_tabs') // hmm maybe just pass thw hwole object into the function
-		delimiter = '\t'
-	else if (buttonId == 'delimiter_commas')
-		delimiter = ','
-	else if (buttonId == 'delimiter_custom')
-		delimiter = $('#delimiter_custom').val();
+function manualSelectDelimiter(e) {
+	autoDelimiter = false;
+	let buttonId = String(e.target.id);
+	highlightFormElement(buttonId, autoDelimiter)
+	switch (buttonId) {
+		case 'delimiter_tabs':
+			delimiter = "\t";
+			break;
+	    case 'delimiter_commas':
+			delimiter = ",";
+			break;
+	    case 'delimiter_commaSpaces':
+			delimiter = ", ";
+			break;
+	    case 'delimiter_custom':
+			delimiter = $('#delimiter_custom').val();;
+			break;
+	}
 }
 function resemblesAnArray(input) {
 	// Returns true if the string "input" resembles an array of arrays. Else, false.
