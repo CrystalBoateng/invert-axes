@@ -14,32 +14,111 @@ $("#copy-button").click(copyToClipboard);
 $("#toggle-log").click(toggleLog);
 
 
-// Global variables
+// 'Global' variables
 let autoDelimiter = true; // a boolean
 let delimiter; // a string
 let arrayNotation; // a boolean
 let logMinimized = true; // a boolean
 
-function countElements(myArray) {
-	if (myArray)
-		return myArray.length;
-	else
-		return 0;
+// Receive data from user
+function copyToClipboard() {
+	// Give the user feedback by showing the 'copied to clipboard' message.
+	$("#copied-to-clipboard").toggle(10, function(){ // show div
+		$("#copied-to-clipboard").toggle(4000); // hide div
+	});
+	// Copy the text from the output box, to the user's clipboard.
+	// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
+	document.getElementById("user-output").select();
+	document.execCommand("copy");
 }
-function highlightFormElement(elementID, auto) {
-	// Unhighlight every form element 
-	/* (**REQUIREMENT: DOM Traversal) */
-	let domForm = document.body.children[0].children[2].children[1].children[0];
-	for (let i = 0; i < domForm.childNodes.length; i++) {
-		let domNode = domForm.childNodes[i];
-		$(domNode).removeClass("selected-delimiter-auto");
-		$(domNode).removeClass("selected-delimiter-manual");
+function invertAxes() {
+	resetRedErrors();
+	let inputString = $("#user-input").val();
+	if (inputString) {
+		inputString = removeSmartQuotes(inputString);
+		delimiter = autoSelectDelimiter(inputString);
+		if (!delimiter)
+			return "Unclear delimiter.";
+		// Convert inputString to an array.
+		let inputArray;
+		arrayNotation = resemblesAnArray(inputString);
+		if (arrayNotation) {
+			try {
+				inputArray = stringToArray(inputString,',',true);
+			}
+			catch (err) {
+				console.log("Could not parse the data as an array of rows containing multiiple arrays of columns. Check the input data for possible syntax errors.");
+				console.log("Red-Error Note: Input data resembles an array, but could not be parsed as one. ");
+				inputArray = stringToArray(inputString, delimiter);
+			}
+		} else {
+			inputArray = stringToArray(inputString, delimiter);
+		}
+		// Determine the average row length
+		let averageRowLength = 0;
+		for (let i = 0; i < inputArray.length; i++)
+			averageRowLength += inputArray[i].length;
+		averageRowLength = Math.round(averageRowLength / inputArray.length);
+		// Verify that all rows have the same length
+		inputArray = validateRowLengths(inputArray, averageRowLength);
+		// Invert the arrays
+		let outputArray = [];
+		let outputRow;
+		for (let i = 0; i < averageRowLength; i++) {
+			outputRow = [];
+			for (let j = 0; j < inputArray.length; j++) {
+				outputRow.push(inputArray[j][i]);
+			}
+			outputArray.push(outputRow);
+		}
+		let outputString = arrayToString(outputArray, delimiter, arrayNotation);
+		$("#user-output").val(outputString);
+	} else {
+		console.log("Red-Error there's no input content to parse.");
+		$("#user-output").val("");
 	}
-	// highlight one form element
-	if (auto)
-		$("#"+elementID).addClass("selected-delimiter-auto");
-	else
-		$("#"+elementID).addClass("selected-delimiter-manual");
+}
+function toggleLog() {
+	$("#log-wrapper").toggle(30,function(){
+		if (logMinimized) {
+			// Replace the maximize icon with minimize
+			$('<img id="log-button" class="icon" src="images/minimize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
+			logMinimized = false;
+		} else {
+			// Replace the minimize icon with maximize
+			$('<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
+			logMinimized = true;
+		}
+	})
+}
+
+// Data validation and cleanup
+function arrayToString(input, delim, outputAsArray) {
+	let stringToReturn = '';
+	let rowToSave = '';
+	for (let i = 0; i < input.length; i++) {
+		rowToSave = outputAsArray ? '[' : '';
+		for (let j = 0; j < input[i].length; j++) {
+			if (j < input[i].length - 1) {
+				rowToSave += input[i][j] + delim;
+			} else {
+				// don't add a delimiter after the last element of the row.
+				outputAsArray ?
+					rowToSave += input[i][j] + '],'
+					: rowToSave += input[i][j];
+			}
+		}
+		if (i < input.length - 1) {
+			stringToReturn += rowToSave + "\n";
+		} else {
+			// don't add a line break after the last element of the row.
+			stringToReturn += rowToSave;
+		}
+	}
+	// If output should look like an array, remove the trailing comma.
+	 if (outputAsArray)
+		stringToReturn = stringToReturn.slice(0,-1);
+	return stringToReturn;
 }
 function autoSelectDelimiter(input) {
 	if (autoDelimiter) {
@@ -85,6 +164,12 @@ function autoSelectDelimiter(input) {
 		return delimiter;
 	}
 }
+function countElements(myArray) {
+	if (myArray)
+		return myArray.length;
+	else
+		return 0;
+}
 function manualSelectDelimiter(buttonId) {
 	highlightFormElement(buttonId)
 	if (buttonId == 'delimiter_tabs') // hmm maybe just pass thw hwole object into the function
@@ -93,20 +178,6 @@ function manualSelectDelimiter(buttonId) {
 		delimiter = ','
 	else if (buttonId == 'delimiter_custom')
 		delimiter = $('#delimiter_custom').val();
-}
-let outputString;
-function resetRedErrors() {
-	// $(".red-error").css("display","none")
-}
-function removeSmartQuotes(input) {
-	// Convert smart quotes to regular quotes
-	/* (**REQUIREMENT: Form validation) */
-	let smartQuotes = [[/‘/g, "'"], [/’/g, "'"], [/“/g, '"'], [/”/g, '"']];
-	for (let i = 0; i < smartQuotes.length; i++) {
-		// Referenced this page when looking for a string method to replace multiple instances of a substring (rather than only the first instance): https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
-		input = input.replace(smartQuotes[i][0], smartQuotes[i][1]);
-	}
-	return input;
 }
 function resemblesAnArray(input) {
 	// Returns true if the string "input" resembles an array of arrays. Else, false.
@@ -129,9 +200,19 @@ function resemblesAnArray(input) {
 		console.log('Arrays detected. Found...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
 		return true;
 	} else {
-		console.log('No arrays detected. Found only...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
+		console.log('No arrays detected. Only found...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
 		return false;
 	}
+}
+function removeSmartQuotes(input) {
+	// Convert smart quotes to regular quotes
+	/* (**REQUIREMENT: Form validation) */
+	let smartQuotes = [[/‘/g, "'"], [/’/g, "'"], [/“/g, '"'], [/”/g, '"']];
+	for (let i = 0; i < smartQuotes.length; i++) {
+		// Referenced this page when looking for a string method to replace multiple instances of a substring (rather than only the first instance): https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
+		input = input.replace(smartQuotes[i][0], smartQuotes[i][1]);
+	}
+	return input;
 }
 function stringToArray(input, delim, brackets) {
 	/* Takes a string. Returns an array of arrays. */
@@ -147,33 +228,6 @@ function stringToArray(input, delim, brackets) {
 		input[i] = input[i].split(delim);
 	}
 	return input;
-}
-function arrayToString(input, delim, outputAsArray) {
-	let stringToReturn = '';
-	let rowToSave = '';
-	for (let i = 0; i < input.length; i++) {
-		rowToSave = outputAsArray ? '[' : '';
-		for (let j = 0; j < input[i].length; j++) {
-			if (j < input[i].length - 1) {
-				rowToSave += input[i][j] + delim;
-			} else {
-				// don't add a delimiter after the last element of the row.
-				outputAsArray ?
-					rowToSave += input[i][j] + '],'
-					: rowToSave += input[i][j];
-			}
-		}
-		if (i < input.length - 1) {
-			stringToReturn += rowToSave + "\n";
-		} else {
-			// don't add a line break after the last element of the row.
-			stringToReturn += rowToSave;
-		}
-	}
-	// If output should look like an array, remove the trailing comma.
-	 if (outputAsArray)
-		stringToReturn = stringToReturn.slice(0,-1);
-	return stringToReturn;
 }
 function validateRowLengths(input, avgRowLen) {
 	/* (**REQUIREMENT: Form validation) */
@@ -201,76 +255,24 @@ function validateRowLengths(input, avgRowLen) {
     }
     return input;
 }
-function invertAxes() {
-	resetRedErrors();
-	let inputString = $("#user-input").val();
-	if (inputString) {
-		inputString = removeSmartQuotes(inputString);
-		delimiter = autoSelectDelimiter(inputString);
-		if (!delimiter)
-			return "Unclear delimiter.";
-		// Convert inputString to an array.
-		let inputArray;
-		arrayNotation = resemblesAnArray(inputString);
-		if (arrayNotation) {
-			try {
-				inputArray = stringToArray(inputString,',',true);
-			}
-			catch (err) {
-				console.log("Could not parse the data as an array of rows containing multiiple arrays of columns. Check the input data for possible syntax errors.");
-				console.log("Red-Error Note: Input data resembles an array, but could not be parsed as one. ");
-				inputArray = stringToArray(inputString, delimiter);
-			}
-		} else {
-			inputArray = stringToArray(inputString, delimiter);
-		}
 
-		// INCOMPLETE: verify that all rows have the same length
-		// Determine the averageRowLength.
-		let averageRowLength = 0;
-		for (let i = 0; i < inputArray.length; i++)
-			averageRowLength += inputArray[i].length;
-		averageRowLength = Math.round(averageRowLength / inputArray.length);
-			inputArray = validateRowLengths(inputArray, averageRowLength);
-		// invert the arrays
-		let outputArray = [];
-		let outputRow;
-		for (let i = 0; i < averageRowLength; i++) {
-			outputRow = [];
-			for (let j = 0; j < inputArray.length; j++) {
-				outputRow.push(inputArray[j][i]);
-			}
-			outputArray.push(outputRow);
-		}
-		outputString = arrayToString(outputArray, delimiter, arrayNotation);
-		$("#user-output").val(outputString);
-	} else {
-		console.log("Red-Error there's no input content to parse.");
-		$("#user-output").val("");
+// Provide feedback to user
+function highlightFormElement(elementID, auto) {
+	// Unhighlight every form element 
+	/* (**REQUIREMENT: DOM Traversal) */
+	let domForm = document.body.children[0].children[2].children[1].children[0];
+	for (let i = 0; i < domForm.childNodes.length; i++) {
+		let domNode = domForm.childNodes[i];
+		$(domNode).removeClass("selected-delimiter-auto");
+		$(domNode).removeClass("selected-delimiter-manual");
 	}
+	// highlight one form element
+	if (auto)
+		$("#"+elementID).addClass("selected-delimiter-auto");
+	else
+		$("#"+elementID).addClass("selected-delimiter-manual");
 }
-function copyToClipboard() {
-	// Give the user feedback by showing a message
-	$("#copied-to-clipboard").toggle(10, function(){ // show div
-		$("#copied-to-clipboard").toggle(4000); // hide div
-	});
-	// Copy the text in the output box, to the user's clipboard.
-	// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
-	document.getElementById("user-output").select();
-	document.execCommand("copy");
+function resetRedErrors() {
+	// $(".red-error").css("display","none")
 }
-function toggleLog() {
-	$("#log-wrapper").toggle(30,function(){
-		if (logMinimized) {
-			// Replace the maximize icon with minimize
-			$('<img id="log-button" class="icon" src="images/minimize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
-			logMinimized = false;
-		} else {
-			// Replace the minimize icon with maximize
-			$('<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
-			logMinimized = true;
-		}
-	})
-}
-
 
