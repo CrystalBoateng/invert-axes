@@ -1,5 +1,4 @@
 // External dependecies: jQuery
-
 "use strict"; console.clear();
 
 // Event handlers 
@@ -14,6 +13,8 @@ $("form").keyup(manualSelectDelimiter);
 $("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
 $("#copy-button").click(copyToClipboard);
 $("#toggle-log").click(toggleLog);
+$("#save-button").click(save);
+$("#load-button").click(load);
 
 
 // 'Global' variables
@@ -27,7 +28,7 @@ function autoSelectDelimiter(input) {
 	if (autoDelimiter) {
 		// Derive the delimiter based on the string entered by user
 		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
-		/* (**REQUIREMENT: Creting and handling a data structure) */	
+		/* (**REQUIREMENT: Creating and handling a data structure) */
 		let tabs = {
 			count: countElements(input.match(/\t/g)), // count instances of \t,
 			elementID: 'delimiter_tabs',
@@ -126,6 +127,13 @@ function invertAxes() {
 		$("#user-output").val("");
 	}
 }
+function load() {
+	/* (**REQUIREMENT: Creating and handling a data structure) */
+	let storedData = JSON.parse(localStorage.getItem("invertAxes"));
+	$("#user-input").val(storedData.inputData);
+	invertAxes();
+	showInLog(`Input data saved.`);
+}
 function manualSelectDelimiter(event) {
 	autoDelimiter = false;
 	let buttonId = String(event.target.id);
@@ -144,6 +152,15 @@ function manualSelectDelimiter(event) {
 			delimiter = $('#delimiter_custom').val();
 			break;
 	}
+}
+function save() {
+	/* (**REQUIREMENT: Creating and handling a data structure) */
+	localStorage.setItem("invertAxes", JSON.stringify( 
+		{
+			inputData: $("#user-input").val()
+		} 
+	));
+	showInLog(`Input data saved.`);
 }
 function toggleLog() {
 	$("#black-wrapper").toggleClass("bw-minimized bw-maximized");
@@ -300,10 +317,10 @@ function highlightFormElement(elementID, auto) {
 		$("#"+elementID).addClass("selected-delimiter-manual");
 }
 function showInLog(text) {
-	$("#log").html( `${$("#log").html()} <br /> ${text}` );
+	/* (**REQUIREMENT: DOM element creation, deletion, or modification) */
+	$("#log").html( $("#log").html() + '<br />' + text );
 }
 function resetLogsAndErrors() {
 	$("#log").html("");
 	$(".red-error").css("display","none");
 }
-
