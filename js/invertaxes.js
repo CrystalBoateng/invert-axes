@@ -9,7 +9,8 @@ $(document).ready(invertAxes);
 $("#user-input").keyup(invertAxes);
 $("#delimiter_custom").change(invertAxes);
 // Mouse event handlers
-$("form").mouseup(manualSelectDelimiter).keyup(manualSelectDelimiter);
+$("form").mouseup(manualSelectDelimiter)
+$("form").keyup(manualSelectDelimiter);
 $("#user-input, #invert-button, form, #load-button").mouseup(invertAxes);
 $("#copy-button").click(copyToClipboard);
 $("#toggle-log").click(toggleLog);
@@ -24,7 +25,7 @@ let logMinimized = true; // a boolean
 // Receive data from user
 function autoSelectDelimiter(input) {
 	if (autoDelimiter) {
-		// Derive the delimiter based on the string entered by user.
+		// Derive the delimiter based on the string entered by user
 		// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
 		/* (**REQUIREMENT: Creting and handling a data structure) */	
 		let tabs = {
@@ -44,8 +45,12 @@ function autoSelectDelimiter(input) {
 		}
 		// avoid double-counting commaSpaces
 		commas.count = commas.count - commaSpaces.count;
-		console.log("Found the following potential delimiters:\n\t %s tab(s), %s comma(s), and %s comma(s) followed by spaces", tabs.count, commas.count, commaSpaces.count);
-		// If any delimiter is ~twice as common as the others, select it.
+		showInLog(String(`Found the following potential delimiters:<br />
+			<span class='indented'>${tabs.count} tab(s), ${commas.count} 
+			comma(s), and ${commaSpaces.count} comma(s) followed by spaces.
+			</span>`)
+		);
+		// If any delimiter is ~twice as common as the others, select it
 		let totalDelim = tabs.count + commas.count + commaSpaces.count;
 		tabs.ratio = tabs.count / totalDelim;
 		commas.ratio = commas.count / totalDelim;
@@ -53,57 +58,50 @@ function autoSelectDelimiter(input) {
 		let commonDel = [tabs, commas, commaSpaces];
 		for (let i = 0; i < commonDel.length; i++) {
 			if (commonDel[i].ratio >= 0.6) {
-				highlightFormElement(commonDel[i].elementID, autoDelimiter); // Show user current delim
+				// Show user which delimiter was selected
+				highlightFormElement(commonDel[i].elementID, autoDelimiter);
+				showInLog(String(`<span class='indented'>Selected 
+					${commonDel[i].elementID.slice(10)} as delimiter.</span>`));
 				return commonDel[i].value;
 			}
 		}
-		// If no delimiter met that criterion, notify the user.
-		console.log("Red-Error: The delimiter could not be automatically determined. Please select a delimiter manually.");
+		// If no delimiter met that criterion, notify the user
+		$("#ambiguous-delimiter").css("display","block");
 		return false;
 	}
 	else {
-		// Keep the user-selected delimiter from the DOM.
+		// Keep the user-selected delimiter from the DOM
+		if (!delimiter)
+			$("#empty-custom").css("display", "block");
 		return delimiter;
 	}
 }
 function copyToClipboard() {
-	// Give the user feedback by showing the 'copied to clipboard' message.
-	$("#copied-to-clipboard").toggle(10, function(){ // show div
-		$("#copied-to-clipboard").toggle(4000); // hide div
+	// Give the user feedback by showing the 'copied to clipboard' message
+	$("#copied-to-clipboard").toggle(10, function(){ // Show the div
+		$("#copied-to-clipboard").toggle(4000); // Hide the div
 	});
-	// Copy the text from the output box, to the user's clipboard.
+	// Copy the text from the output box, to the user's clipboard
 	// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 	document.getElementById("user-output").select();
 	document.execCommand("copy");
 }
-function delimFromDom(e) {
-	autoDelimiter = false;
-	// e.preventDefault();
-	// alert('working');
-}
 function invertAxes() {
-	resetRedErrors();
+	resetLogsAndErrors();
 	let inputString = $("#user-input").val();
 	if (inputString) {
 		inputString = removeSmartQuotes(inputString);
 		delimiter = autoSelectDelimiter(inputString);
-		if (!delimiter)
-			return "Unclear delimiter.";
+		if (!autoDelimiter && inputString.indexOf(delimiter) < 0)
+			$("#delimiter-never-found").css("display", "block");
 		// Convert inputString to an array.
 		let inputArray;
 		arrayNotation = resemblesAnArray(inputString);
 		if (arrayNotation) {
-			try {
-				inputArray = stringToArray(inputString,',',true);
-			}
-			catch (err) {
-				console.log("Could not parse the data as an array of rows containing multiiple arrays of columns. Check the input data for possible syntax errors.");
-				console.log("Red-Error Note: Input data resembles an array, but could not be parsed as one. ");
-				inputArray = stringToArray(inputString, delimiter);
-			}
-		} else {
+			inputArray = stringToArray(inputString,',',true);
+			showInLog("Input data was parsed as an array of rows containing multiiple arrays of columns.");
+		} else
 			inputArray = stringToArray(inputString, delimiter);
-		}
 		// Determine the average row length
 		let averageRowLength = 0;
 		for (let i = 0; i < inputArray.length; i++)
@@ -124,8 +122,27 @@ function invertAxes() {
 		let outputString = arrayToString(outputArray, delimiter, arrayNotation);
 		$("#user-output").val(outputString);
 	} else {
-		console.log("Red-Error there's no input content to parse.");
+		$("#input-is-empty").css("display","block");
 		$("#user-output").val("");
+	}
+}
+function manualSelectDelimiter(event) {
+	autoDelimiter = false;
+	let buttonId = String(event.target.id);
+	highlightFormElement(buttonId, autoDelimiter)
+	switch (buttonId) {
+		case 'delimiter_tabs':
+			delimiter = "\t";
+			break;
+	    case 'delimiter_commas':
+			delimiter = ",";
+			break;
+	    case 'delimiter_commaSpaces':
+			delimiter = ", ";
+			break;
+	    case 'delimiter_custom':
+			delimiter = $('#delimiter_custom').val();
+			break;
 	}
 }
 function toggleLog() {
@@ -143,7 +160,6 @@ function toggleLog() {
 	})
 }
 
-
 // Data validation and cleanup
 function arrayToString(input, delim, outputAsArray) {
 	let stringToReturn = '';
@@ -154,7 +170,7 @@ function arrayToString(input, delim, outputAsArray) {
 			if (j < input[i].length - 1) {
 				rowToSave += input[i][j] + delim;
 			} else {
-				// don't add a delimiter after the last element of the row.
+				// don't add a delimiter after the last element of the row
 				outputAsArray ?
 					rowToSave += input[i][j] + '],'
 					: rowToSave += input[i][j];
@@ -163,11 +179,11 @@ function arrayToString(input, delim, outputAsArray) {
 		if (i < input.length - 1) {
 			stringToReturn += rowToSave + "\n";
 		} else {
-			// don't add a line break after the last element of the row.
+			// don't add a line break after the last element of the row
 			stringToReturn += rowToSave;
 		}
 	}
-	// If output should look like an array, remove the trailing comma.
+	// If output should look like an array, remove the trailing comma
 	 if (outputAsArray)
 		stringToReturn = stringToReturn.slice(0,-1);
 	return stringToReturn;
@@ -177,25 +193,6 @@ function countElements(myArray) {
 		return myArray.length;
 	else
 		return 0;
-}
-function manualSelectDelimiter(e) {
-	autoDelimiter = false;
-	let buttonId = String(e.target.id);
-	highlightFormElement(buttonId, autoDelimiter)
-	switch (buttonId) {
-		case 'delimiter_tabs':
-			delimiter = "\t";
-			break;
-	    case 'delimiter_commas':
-			delimiter = ",";
-			break;
-	    case 'delimiter_commaSpaces':
-			delimiter = ", ";
-			break;
-	    case 'delimiter_custom':
-			delimiter = $('#delimiter_custom').val();;
-			break;
-	}
 }
 function resemblesAnArray(input) {
 	// Returns true if the string "input" resembles an array of arrays. Else, false.
@@ -207,7 +204,7 @@ function resemblesAnArray(input) {
 	bracketReturns = countElements(bracketReturns);
 	commas = countElements(commas);
 	returnOpens = countElements(returnOpens);
-	// Evaluate if string resembles an array.
+	// Evaluate how much the string resembles an array
 	if (bracketReturns &&
 		commas &&
 		returnOpens &&
@@ -215,10 +212,16 @@ function resemblesAnArray(input) {
 		commas >= 4 &&
 		returnOpens >= 2
 	) {
-		console.log('Arrays detected. Found...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
+		showInLog(`Input data resembles a list of arrays. Found...<br />
+			<span class='indented'>${bracketReturns} instances of "],linebreak" or similar</span><br />
+			<span class='indented'>${commas} instances of "," or similar</span><br />
+			<span class='indented'>${returnOpens} instances of "linebreak[" or similar</span>`);
 		return true;
 	} else {
-		console.log('No arrays detected. Only found...\n\t%s instances of "],linebreak" or similar\n\t%s instances of "," or similar\n\t%s instances of "linebreak[" or similar', bracketReturns, commas, returnOpens);
+		showInLog(`No arrays detected. Only found...<br />
+			<span class='indented'>${bracketReturns} instances of "],linebreak" or similar</span><br />
+			<span class='indented'>${commas} instances of "," or similar</span><br />
+			<span class='indented'>${returnOpens} instances of "linebreak[" or similar</span>`);
 		return false;
 	}
 }
@@ -249,27 +252,33 @@ function stringToArray(input, delim, brackets) {
 }
 function validateRowLengths(input, avgRowLen) {
 	/* (**REQUIREMENT: Form validation) */
-    // If any rows are not the average length, inform the user.
+    // If any rows are not the average length, inform the user
     let badRows = [];
     for (let i = 0; i < input.length; i++) {
         if (input[i].length != avgRowLen) {
-            // add one to index because there is no line 0 in the white textarea.
+            // add 1 to the index because there's no line 0 in the white textarea
 			badRows.push(i + 1);
 		}
     }
     if (badRows.length > 0) {
-        // Correct the row to prevent the error from propogating to other rows.
+        // Correct the row to prevent the error from propogating to other rows
         let replacementRow = [];
-        for (let i = 1; i <= avgRowLen; i++) {
+        for (let i = 1; i <= avgRowLen; i++)
             replacementRow.push('?')
-        }
-        for (let i = 0; i < badRows.length; i++)
+        for (let i = 0; i < badRows.length; i++) {
             input[badRows - 1] = replacementRow;
+        }
         // Inform the user
+        $("#unusual-number-of-columns").html(
+        	"The following rows contain an unusual number of columns: "
+        	+ badRows);
+        $("#unusual-number-of-columns").css("display", "block");
         if (badRows.length > 1)
-            console.log("Red-Error: Row(s) " + badRows + " contained an unusual number of columns. \n\tTheir values were replaced with '?'.");
+            showInLog(`Rows ${badRows} contained an unusual number of columns.<br />
+            	<span class='indented'>Their values were replaced with '?'.</span>`);
         else
-            console.log("Red-Error: Row " + badRows + " contained an unusual number of columns. \n\tIts values were replaced with '?'.");
+            showInLog(`Row ${badRows} contained an unusual number of columns.<br />
+            	<span class='indented'>Its values were replaced with '?'.</span>`);
     }
     return input;
 }
@@ -290,7 +299,11 @@ function highlightFormElement(elementID, auto) {
 	else
 		$("#"+elementID).addClass("selected-delimiter-manual");
 }
-function resetRedErrors() {
-	// $(".red-error").css("display","none")
+function showInLog(text) {
+	$("#log").html( `${$("#log").html()} <br /> ${text}` );
+}
+function resetLogsAndErrors() {
+	$("#log").html("");
+	$(".red-error").css("display","none");
 }
 

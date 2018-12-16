@@ -8,21 +8,24 @@
 		font-size: 13pt;
 		width: 100%;
 	}
-	.restricted-width {
-		width: 768px;
-		margin: 0 auto;
-	}
 	.dropshadow {
 		box-shadow: 2px 2px 5px;
-	}
-	.monospaced {
-		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
 	}
 	.icon {
 		cursor: pointer;
 		display: block;
 		margin: 0 auto;
 		width: 68px;
+	}
+	.indented {
+		margin-left: 30px;
+	}
+	.monospaced {
+		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
+	}
+	.restricted-width {
+		width: 768px;
+		margin: 0 auto;
 	}
 
 /* ************************************
