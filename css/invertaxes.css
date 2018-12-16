@@ -8,9 +8,6 @@
 		font-size: 13pt;
 		width: 100%;
 	}
-	.dropshadow {
-		box-shadow: 2px 2px 5px;
-	}
 	.icon {
 		cursor: pointer;
 		display: block;
@@ -175,12 +172,14 @@
 	#black-wrapper #toggle-log {
 		background-color: #1d1d1d;
 		border-radius: 0 48px 0 0;
+		box-shadow: 2px 2px 5px black;
 		width: 90px;
 	}
 	#black-wrapper #toggle-log #log-button {
 		margin-left: 6px;
 	}
 	#black-wrapper #log-wrapper {
+		box-shadow: 2px 2px 5px black;
 		background-color: #1d1d1d;
 		display: none;
 		min-width: 768px;

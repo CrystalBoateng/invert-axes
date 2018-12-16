@@ -1,80 +1,83 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>InvertAxes</title>
-		<link rel="stylesheet" type="text/css" href="css/invertaxes.css">
-		<meta charset="UTF-8">
-	</head>
-	<body>
-		<!--
+
+<head>
+	<title>InvertAxes</title>
+	<link rel="stylesheet" type="text/css" href="css/invertaxes.css">
+	<script type="text/javascript" src="js/jQuery.js"></script>
+	<script type="text/javascript" src="js/invertaxes.js"></script>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+	<!--
 		Button icons were designed by Anastasya Bolshakova and originally published under a Creative Commons (Attribution 3.0 Unported) license, with the title "Simple Files".
 		https://www.iconfinder.com/iconsets/simple-files-1
 		https://creativecommons.org/licenses/by/3.0
 		These icons have been adapted for this repository.
 		-->
-		<div id="gray-wrapper" class="restricted-width">
-			<img id="logo" alt-"Invert Axes: Invert the axes of a spredsheet." src="images/logo.png" />
-			<div id="instructions">
-				<ol>
-					<li>Paste values or arrays into the white box.</li>
-					<li>Select a delimiter (optional).</li>
-					<li>Copy the inverted data into your clipboard.</li>
-				</ol>
-			</div>
+	<div id="gray-wrapper" class="restricted-width">
+		<img id="logo" alt-"Invert Axes: Invert the axes of a spredsheet." src="images/logo.png" />
+		<div id="instructions">
+			<ol>
+				<li>Paste values or arrays into the white box.</li>
+				<li>Select a delimiter (optional).</li>
+				<li>Copy the inverted data into your clipboard.</li>
+			</ol>
+		</div>
 
-			<div id="left-block">
-				<!-- Referenced this webpage to prevent textareas from wrapping: https://css-tricks.com/textarea-tricks/#article-header-id-7 -->
-				<textarea class="text-area monospaced" id="user-input" wrap="off" 
-placeholder="example:
+		<div id="left-block">
+			<!-- Referenced this webpage to prevent textareas from wrapping: https://css-tricks.com/textarea-tricks/#article-header-id-7 -->
+			<textarea class="text-area monospaced" id="user-input" wrap="off"
+				autofocus="autofocus" placeholder="example:
 
 ID#	MAKE	MODEL
 0001	toyota	camry
 0002	ford	focus
-0003	honda	civic">
-				</textarea>
-				<span class="aligned-with-textarea">
-					Delimiter:
-					<form>
-						<!-- Referenced this page to stop the HTML5 buttons from refreshing the page on click: https://stackoverflow.com/questions/932653/how-to-prevent-buttons-from-submitting-forms -->
-						<button type="button" class="unselected-delimiter" id="delimiter_tabs">tab</button>
-						<button type="button" class="unselected-delimiter" id="delimiter_commas">comma</button>
-						<button type="button" class="unselected-delimiter" id="delimiter_commaSpaces">comma+'_'</button>
-						<input type="textfield" class="unselected-delimiter" type="text" id="delimiter_custom" placeholder="custom">
-					</form>
-					<div class="red-error" id="unusual-number-of-columns">The following rows contain an unusual number of columns:</div>
-					<div class="red-error" id="input-is-empty">There is no content in the input field.</div>
-					<div class="red-error" id="empty-custom">The 'Custom' delimiter is selected, but no custom characters have been entered.</div>
-					<div class="red-error" id="delimiter-never-found">This delimiter was not found anywhere in the input text.</div>
-					<div class="red-error" id="ambiguous-delimiter">The delimiter could not be automatically determined. Please select a delimiter manually.</div>
-				</span>
-			</div>
-			<div id="middle-block">
-				<img id="invert-button"class="icon" src="images/invert.png" alt="Invert button" title="Invert" />
-				<img id="copy-button"class="icon" src="images/copy.png" alt="Copy button" title="Copy to clipboard" />
-			</div>
-			<div id="right-block">
-				<textarea class="text-area monospaced" id="user-output" wrap="off" readonly="readonly"></textarea>
-				<span class="aligned-with-textarea"><div id="copied-to-clipboard">Copied data to clipboard.</div></span>
-			</div>
-			<hr id="gray-bottom-padding"/>
+0003	honda	civic"></textarea>
+			<span class="aligned-with-textarea">
+				Delimiter:
+				<form>
+					<!-- Referenced this page to stop the HTML5 buttons from refreshing the page on click: https://stackoverflow.com/questions/932653/how-to-prevent-buttons-from-submitting-forms -->
+					<button type="button" class="unselected-delimiter" id="delimiter_tabs">tab</button>
+					<button type="button" class="unselected-delimiter" id="delimiter_commas">comma</button>
+					<button type="button" class="unselected-delimiter" id="delimiter_commaSpaces">comma+'_'</button>
+					<input type="textfield" class="unselected-delimiter" type="text" id="delimiter_custom" placeholder="custom">
+				</form>
+				<div class="red-error" id="unusual-number-of-columns">The following rows contain an unusual number of columns:</div>
+				<div class="red-error" id="input-is-empty">There is no content in the input field.</div>
+				<div class="red-error" id="empty-custom">The 'Custom' delimiter is selected, but no custom characters have been entered.</div>
+				<div class="red-error" id="delimiter-never-found">This delimiter was not found anywhere in the input text.</div>
+				<div class="red-error" id="ambiguous-delimiter">The delimiter could not be automatically determined. Please select a delimiter manually.</div>
+			</span>
 		</div>
-
-		<div id="blue-wrapper" class="restricted-width">
-			<div><img id="save-button" class="icon" src="images/save.png" alt="Save button" title="Save to local storage" /></div>
-			<div><img id="load-button" class="icon" src="images/load.png" alt="Load button" title="Load from local storage" /></div>
-			<hr id="blue-bottom-padding"/>
+		<div id="middle-block">
+			<img id="invert-button" class="icon" src="images/invert.png" alt="Invert button" title="Invert" />
+			<img id="copy-button" class="icon" src="images/copy.png" alt="Copy button" title="Copy to clipboard" />
 		</div>
-
-		<div id="black-wrapper" class="monospaced bw-minimized">
-			<div id="toggle-log">
-				<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />
-			</div>
-			<div id="log-wrapper">
-				<div id="log" class="restricted-width"></div>
-			</div>
+		<div id="right-block">
+			<textarea class="text-area monospaced" id="user-output" wrap="off" readonly="readonly"></textarea>
+			<span class="aligned-with-textarea">
+				<div id="copied-to-clipboard">Copied data to clipboard.</div>
+			</span>
 		</div>
+		<hr id="gray-bottom-padding" />
+	</div>
 
-		<script type="text/javascript" src="js/jQuery.js"></script>
-		<script type="text/javascript" src="js/invertaxes.js"></script>
-	</body>
+	<div id="blue-wrapper" class="restricted-width">
+		<div><img id="save-button" class="icon" src="images/save.png" alt="Save button" title="Save to local storage (NOT ENCRYPTED)" /></div>
+		<div><img id="load-button" class="icon" src="images/load.png" alt="Load button" title="Load from local storage" /></div>
+		<hr id="blue-bottom-padding" />
+	</div>
+
+	<div id="black-wrapper" class="monospaced bw-minimized">
+		<div id="toggle-log">
+			<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />
+		</div>
+		<div id="log-wrapper">
+			<div id="log" class="restricted-width"></div>
+		</div>
+	</div>
+</body>
+
 </html>
