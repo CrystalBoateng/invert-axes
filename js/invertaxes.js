@@ -75,7 +75,8 @@ $(document).ready(function(){
 			$("#ambiguous-delimiter").css("display", "block");
 			return false;
 		} else {
-			// Keep the user-selected delimiter from the DOM
+			// Keep the delimiter which the user manually selected
+			// Or, if they didn't select one, show an error
 			if (!delimiter)
 				$("#empty-custom").css("display", "block");
 			return delimiter;
