@@ -18,7 +18,7 @@
 		margin-left: 30px;
 	}
 	.monospaced {
-		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
+		font-family: "Lucida Console", Monaco, monospace; font
 	}
 	.restricted-width {
 		width: 768px;
@@ -75,7 +75,7 @@
 		background-color: #3a3a3a;
 		border-radius: 6px;
 		border: 2px solid #afabab;
-		font-family: "Lucida Console", Monaco, monospace; font /*font stack source: https://www.w3schools.com/cssref/css_websafe_fonts.asp*/
+		font-family: "Lucida Console", Monaco, monospace; font
 		font-size: 12pt;
 		text-align: center;
 		width: 87px;

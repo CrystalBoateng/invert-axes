@@ -2,7 +2,6 @@
 "use strict";
 console.clear();
 
-/* (**REQUIREMENT: Extend a library) */
 (function($) { // Custom jQuery plugins
 	$.fn.showInLog = function (text) {
 		this.each(function () {
@@ -13,9 +12,7 @@ console.clear();
 })(jQuery);
 
 $(document).ready(function(){
-	// Event handlers
-	/* (**REQUIREMENT: Capturing and handling events) */
-	$(document).ready(invertAxes);
+	invertAxes();
 	// Keyboard event handlers
 	$("#user-input").keyup(invertAxes);
 	$("#delimiter_custom").change(invertAxes);
@@ -38,8 +35,6 @@ $(document).ready(function(){
 	function autoSelectDelimiter(input) {
 		if (autoDelimiter) {
 			// Derive the delimiter based on the string entered by user
-			// Referenced this page when looking for a string method to count instances of a substring: https://stackoverflow.com/questions/4009756/how-to-count-string-occurrence-in-string
-			/* (**REQUIREMENT: Creating and handling a data structure) */
 			let tabs = {
 				count: countElements(input.match(/\t/g)), // count instances of \t,
 				elementID: 'delimiter_tabs',
@@ -92,7 +87,6 @@ $(document).ready(function(){
 			$("#copied-to-clipboard").toggle(4000); // Hide the div
 		});
 		// Copy the text from the output box, to the user's clipboard
-		// Referenced this page for information about copying to clipboard: https://www.w3schools.com/howto/howto_js_copy_clipboard.asp
 		document.getElementById("user-output").select();
 		document.execCommand("copy");
 	}
@@ -137,7 +131,6 @@ $(document).ready(function(){
 		}
 	}
 	function load() {
-		/* (**REQUIREMENT: Creating and handling a data structure) */
 		try {
 			let storedData = JSON.parse(localStorage.getItem("invertAxes"));
 			$("#user-input").val(storedData.inputData);
@@ -169,7 +162,6 @@ $(document).ready(function(){
 		}
 	}
 	function save() {
-		/* (**REQUIREMENT: Creating and handling a data structure) */
 		localStorage.setItem("invertAxes", JSON.stringify({
 			inputData: $("#user-input").val()
 		}));
@@ -226,7 +218,6 @@ $(document).ready(function(){
 	}
 	function resemblesAnArray(input) {
 		// Returns true if the string "input" resembles an array of arrays. Else, false.
-		/* (**REQUIREMENT: Form validation) */
 		let bracketReturns = input.match(/\]\n|\],\n/g); // find ]\n or ],\n
 		let commas = input.match(/,/g); // find ,
 		let returnOpens = input.match(/\n\[|\n\s\[/g); // find \n[ or \n\s[
@@ -257,17 +248,14 @@ $(document).ready(function(){
 	}
 	function removeSmartQuotes(input) {
 		// Convert smart quotes to regular quotes
-		/* (**REQUIREMENT: Form validation) */
 		let smartQuotes = [
 			[/‘/g, "'"],
 			[/’/g, "'"],
 			[/“/g, '"'],
 			[/”/g, '"']
 		];
-		for (let i = 0; i < smartQuotes.length; i++) {
-			// Referenced this page when looking for a string method to replace multiple instances of a substring (rather than only the first instance): https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
+		for (let i = 0; i < smartQuotes.length; i++)
 			input = input.replace(smartQuotes[i][0], smartQuotes[i][1]);
-		}
 		return input;
 	}
 	function stringToArray(input, delim, brackets) {
@@ -288,7 +276,6 @@ $(document).ready(function(){
 		return output;
 	}
 	function validateRowLengths(input, avgRowLen) {
-		/* (**REQUIREMENT: Form validation) */
 		// If any rows are not the average length, inform the user
 		let badRows = [];
 		for (let i = 0; i < input.length; i++) {
@@ -323,7 +310,6 @@ $(document).ready(function(){
 	// Provide feedback to user
 	function highlightFormElement(elementID, auto) {
 		// Unhighlight every form element
-		/* (**REQUIREMENT: DOM Traversal) */
 		let domForm = document.body.children[0].children[2].children[1].children[0];
 		for (let i = 0; i < domForm.childNodes.length; i++) {
 			let domNode = domForm.childNodes[i];
