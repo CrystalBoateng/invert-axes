@@ -127,11 +127,16 @@ $(document).ready(function(){
     }
     function load() {
         /* (**REQUIREMENT: Creating and handling a data structure) */
-        let storedData = JSON.parse(localStorage.getItem("invertAxes"));
-        $("#user-input").val(storedData.inputData);
-        resetLogsAndErrors(false); // clear the log
-        showInLog(`Input data loaded.`);
-        invertAxes(true);
+        try {
+            let storedData = JSON.parse(localStorage.getItem("invertAxes"));
+            $("#user-input").val(storedData.inputData);
+            resetLogsAndErrors(false); // clear the log
+            showInLog(`Input data loaded.`);
+            invertAxes(true);
+        }
+        catch (err) {
+            alert("No stored data was found.")
+        }
     }
     function manualSelectDelimiter(event) {
         autoDelimiter = false;
