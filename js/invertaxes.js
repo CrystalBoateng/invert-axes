@@ -83,11 +83,11 @@ $(document).ready(function(){
 		}
 	}
 	function copyToClipboard() {
-		// Give the user feedback by showing the 'copied to clipboard' message
+		// Provide feedback to user, by showing the 'copied to clipboard' message
 		$("#copied-to-clipboard").toggle(10, function() { // Show the div
 			$("#copied-to-clipboard").toggle(4000); // Hide the div
 		});
-		// Copy the text from the output box, to the user's clipboard
+		// Copy the text from the output box, into the user's clipboard
 		document.getElementById("user-output").select();
 		document.execCommand("copy");
 	}
@@ -99,7 +99,7 @@ $(document).ready(function(){
 			delimiter = autoSelectDelimiter(inputString);
 			if (!autoDelimiter && inputString.indexOf(delimiter) < 0)
 				$("#delimiter-never-found").css("display", "block");
-			// Convert inputString to an array.
+			// Convert inputString into an array.
 			let inputArray;
 			arrayNotation = resemblesAnArray(inputString);
 			if (arrayNotation) {
@@ -107,12 +107,12 @@ $(document).ready(function(){
 				$("#log").showInLog("Input data was parsed as an array of rows containing multiiple arrays of columns.");
 			} else
 				inputArray = stringToArray(inputString, delimiter);
-			// Determine the average row length
+			// Deduce the average row length
 			let averageRowLength = 0;
 			for (let i = 0; i < inputArray.length; i++)
 				averageRowLength += inputArray[i].length;
 			averageRowLength = Math.round(averageRowLength / inputArray.length);
-			// Verify that all rows have the same length
+			// Verify that all rows have that same length
 			inputArray = validateRowLengths(inputArray, averageRowLength);
 			// Invert the arrays
 			let outputArray = [];
@@ -140,7 +140,7 @@ $(document).ready(function(){
 			invertAxes(true);
 		}
 		catch (err) {
-			alert("No stored data was found.")
+			alert("No saved data was found.")
 		}
 	}
 	function manualSelectDelimiter(event) {
@@ -172,11 +172,11 @@ $(document).ready(function(){
 		$("#black-wrapper").toggleClass("bw-minimized bw-maximized");
 		$("#log-wrapper").toggle(30, function() {
 			if (logMinimized) {
-				// Replace the maximize icon with minimize
+				// Replace the maximize icon with the minimize icon
 				$('<img id="log-button" class="icon" src="images/minimize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
 				logMinimized = false;
 			} else {
-				// Replace the minimize icon with maximize
+				// Replace the minimize icon with the maximize icon
 				$('<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />').replaceAll("#log-button");
 				logMinimized = true;
 			}
@@ -193,7 +193,7 @@ $(document).ready(function(){
 				if (j < input[i].length - 1) {
 					rowToSave += input[i][j] + delim;
 				} else {
-					// don't add a delimiter after the last element of the row
+					// After the last element of the row, don't add a delimiter 
 					rowToSave += outputAsArray ?
 						input[i][j] + '],' :
 						input[i][j];
@@ -202,11 +202,11 @@ $(document).ready(function(){
 			if (i < input.length - 1) {
 				stringToReturn += rowToSave + "\n";
 			} else {
-				// don't add a line break after the last element of the row
+				// After the last element of the row, don't add a line break
 				stringToReturn += rowToSave;
 			}
 		}
-		// If output should look like an array, remove the trailing comma
+		// If output needs to look like an array, remove the trailing comma
 		if (outputAsArray)
 			stringToReturn = stringToReturn.slice(0, -1);
 		return stringToReturn;
@@ -222,11 +222,11 @@ $(document).ready(function(){
 		let bracketReturns = input.match(/\]\n|\],\n/g); // find ]\n or ],\n
 		let commas = input.match(/,/g); // find ,
 		let returnOpens = input.match(/\n\[|\n\s\[/g); // find \n[ or \n\s[
-		// Count instances found. If none found, change count from null to 0.
+		// Count instances found. If none found, change the count from null to 0.
 		bracketReturns = countElements(bracketReturns);
 		commas = countElements(commas);
 		returnOpens = countElements(returnOpens);
-		// Evaluate how much the string resembles an array
+		// Evaluate how closely the string resembles an array
 		if (bracketReturns &&
 			commas &&
 			returnOpens &&
