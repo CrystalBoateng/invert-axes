@@ -1,4 +1,4 @@
-// External dependecies: jQuery
+// Dependecies: jQuery
 "use strict";
 console.clear();
 $(document).ready(function(){
@@ -257,6 +257,7 @@ $(document).ready(function(){
     function stringToArray(input, delim, brackets) {
         // Takes a string. Returns an array of arrays.
         input = input.split("\n");
+        let output = [];
         for (let i = 0; i < input.length; i++) {
             // Remove trailing commas
             if (input[i][input[i].length - 1] == ',')
@@ -265,9 +266,10 @@ $(document).ready(function(){
             if (brackets)
                 input[i] = input[i].slice(1, -1);
             // Split the row string into an array
-            input[i] = input[i].split(delim);
+            if (input[i]) // Omit empty lines
+                output.push(input[i].split(delim)); 
         }
-        return input;
+        return output;
     }
     function validateRowLengths(input, avgRowLen) {
         /* (**REQUIREMENT: Form validation) */
