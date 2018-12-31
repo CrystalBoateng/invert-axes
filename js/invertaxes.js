@@ -12,10 +12,33 @@ console.clear();
 })(jQuery);
 
 $(document).ready(function(){
+	// 'Global' variables
+	let autoDelimiter = true; // a boolean
+	let delimiter; // a string
+	let arrayNotation; // a boolean
+	let logMinimized = true; // a boolean
+
 	invertAxes();
 	// Keyboard event handlers
 	$("#user-input").keyup(invertAxes);
 	$("#delimiter_custom").change(invertAxes);
+	$("#user-input, #delimiter_custom").keydown(function(event) {
+		// Prevent the 'tab' key from tabbing to the next field
+		if (event.which == 9 || event.keyCode == 9) { // if 'tab' key was pressed
+			// get caret position or selection
+			let start = this.selectionStart;
+			let end = this.selectionEnd;
+			let $this = $(this);
+			// set textarea value to: text before caret + tab + text after caret
+			$this.val($this.val().substring(0, start)
+				+ "\t"
+				+ $this.val().substring(end));
+			// put the caret back in the correct position
+			this.selectionStart = this.selectionEnd = start + 1;
+			// prevent the focus lose
+			return false;
+		}
+	});
 	// Mouse event handlers
 	$("form").mouseup(manualSelectDelimiter)
 	$("form").keyup(manualSelectDelimiter);
@@ -24,12 +47,6 @@ $(document).ready(function(){
 	$("#toggle-log").click(toggleLog);
 	$("#save-button").click(save);
 	$("#load-button").click(load);
-
-	// 'Global' variables
-	let autoDelimiter = true; // a boolean
-	let delimiter; // a string
-	let arrayNotation; // a boolean
-	let logMinimized = true; // a boolean
 
 	// Receive data from user
 	function autoSelectDelimiter(input) {

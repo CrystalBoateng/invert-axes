@@ -151,6 +151,9 @@
 		clear: both;
 		/*margin-bottom: 100px; margin-bottom is determined by black-wrapper height*/
 	}
+	#save-button:active, #load-button:active {
+		background: radial-gradient(circle at 34px 34px, #b9dbf6 0%, #62afea 10%, transparent 50%);
+	}
 
 /* ************************************
 *== Black section
