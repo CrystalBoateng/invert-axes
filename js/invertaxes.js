@@ -328,12 +328,9 @@ $(document).ready(function(){
 	// Provide feedback to user
 	function highlightFormElement(elementID, auto) {
 		// Unhighlight every form element
-		let domForm = document.body.children[0].children[2].children[1].children[0];
-		for (let i = 0; i < domForm.childNodes.length; i++) {
-			let domNode = domForm.childNodes[i];
-			$(domNode).removeClass("selected-delimiter-auto");
-			$(domNode).removeClass("selected-delimiter-manual");
-		}
+		$("form").children()
+			.removeClass("selected-delimiter-auto")
+			.removeClass("selected-delimiter-manual");
 		// Highlight one form element
 		if (auto)
 			$("#" + elementID).addClass("selected-delimiter-auto");
