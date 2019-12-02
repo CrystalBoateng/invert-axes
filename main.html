@@ -16,18 +16,18 @@
 		https://creativecommons.org/licenses/by/3.0
 		The icons have been adapted for this repository.
 	-->
-	<div id="gray-wrapper" class="restricted-width">
-		<img id="logo" alt="Invert Axes: Invert the axes of a spredsheet." src="images/logo.png" />
-		<div id="instructions">
+	<section class="restricted-width">
+		<img alt="Invert Axes: Invert the axes of a spredsheet." src="images/logo.png" />
+		<header>
 			<ol>
 				<li>Paste values or arrays into white box (one line per row).</li>
 				<li>Select a delimiter (optional).</li>
 				<li>Copy the inverted data to your clipboard.</li>
 			</ol>
-		</div>
+		</header>
 
 		<div id="left-block">
-			<textarea class="text-area monospaced" id="user-input" wrap="off"
+			<textarea class="monospaced" id="user-input" wrap="off"
 				autofocus="autofocus" placeholder="example:
 
 ID#	MAKE	MODEL
@@ -54,28 +54,28 @@ ID#	MAKE	MODEL
 			<img id="copy-button" class="icon" src="images/copy.png" alt="Copy button" title="Copy to clipboard" />
 		</div>
 		<div id="right-block">
-			<textarea class="text-area monospaced" id="user-output" wrap="off" readonly="readonly"></textarea>
+			<textarea class="monospaced" id="user-output" wrap="off" readonly="readonly"></textarea>
 			<span class="aligned-with-textarea">
 				<div id="copied-to-clipboard">Copied data to clipboard.</div>
 			</span>
 		</div>
-		<hr id="gray-bottom-padding" />
-	</div>
+		<hr />
+	</section>
 
-	<div id="blue-wrapper" class="restricted-width">
+	<section class="restricted-width">
 		<div><img id="save-button" class="icon" src="images/save.png" alt="Save button" title="Save to local storage (NOT ENCRYPTED)" /></div>
 		<div><img id="load-button" class="icon" src="images/load.png" alt="Load button" title="Load from local storage" /></div>
-		<hr id="blue-bottom-padding" />
-	</div>
+		<hr />
+	</section>
 
-	<div id="black-wrapper" class="monospaced bw-minimized">
-		<div id="toggle-log">
+	<section class="monospaced bw-minimized">
+		<button id="toggle-log">
 			<img id="log-button" class="icon" src="images/maximize.png" alt="Log button" title="Toggle log" />
-		</div>
+		</button>
 		<div id="log-wrapper">
 			<div id="log" class="restricted-width"></div>
 		</div>
-	</div>
+	</section>
 </body>
 
 </html>

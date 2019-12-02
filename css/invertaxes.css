@@ -28,23 +28,23 @@
 /* ************************************
 *== Gray section
 ************************************* */
-	#gray-wrapper {
+	body > :nth-child(1) {
 		background-color: #3a3a3a;
 		border-radius: 20px;
 		box-shadow: 4px 8px 14px #1d1d1d;
 		margin-top: 30px;
 	}
-	#gray-wrapper #logo {
+	body > :nth-child(1) > :nth-child(1) {
 		display: block;
 		margin: 0 auto;
 		position: relative;
 		top: 30px;
 		width: 86%;
 	}
-	#instructions {
+	header {
 		margin-bottom: 36px;
 	}
-	.text-area {
+	textarea {
 		border-radius: 20px;
 		border: none;
 		display: block;
@@ -71,7 +71,7 @@
 		display: inline;
 		margin-left: 13px;
 	}
-	form button, form input {
+	button, input {
 		background-color: #3a3a3a;
 		border-radius: 6px;
 		border: 2px solid #afabab;
@@ -80,7 +80,7 @@
 		text-align: center;
 		width: 87px;
 	}
-	form button {
+	button {
 		cursor: pointer;
 	}
 	.unselected-delimiter {
@@ -128,7 +128,7 @@
 	#copied-to-clipboard {
 		display: none;
 	}
-	#gray-bottom-padding {
+	body > :nth-child(1) hr {
 		border: none;
 		clear: both;
 		margin-bottom: 30px;
@@ -137,28 +137,27 @@
 /* ************************************
 *== Blue section
 ************************************* */
-	#blue-wrapper {
+	body > :nth-child(2) {
 		height: 68px;
 		margin-bottom: 77px;
 		margin-top: 77px;
 	}
-	#blue-wrapper div {
+	body > :nth-child(2) div {
 		float: left;
 		width: 50%;
 	}
-	#blue-bottom-padding {
+	body > :nth-child(2) hr {
 		border: none;
 		clear: both;
-		/*margin-bottom: 100px; margin-bottom is determined by black-wrapper height*/
 	}
-	#save-button:active, #load-button:active {
+	body > :nth-child(2) img:active {
 		background: radial-gradient(circle at 34px 34px, #b9dbf6 0%, #62afea 10%, transparent 50%);
 	}
 
 /* ************************************
 *== Black section
 ************************************* */
-	#black-wrapper {
+	body > :nth-child(3) {
 		bottom: 0;
 		left: 0;
 		position: fixed;
@@ -172,23 +171,24 @@
 		min-width: 0;
 		width: 90px;
 	}
-	#black-wrapper #toggle-log {
+	#toggle-log {
 		background-color: #1d1d1d;
 		border-radius: 0 48px 0 0;
 		box-shadow: 2px 2px 5px black;
 		width: 90px;
 	}
-	#black-wrapper #toggle-log #log-button {
+	#toggle-log #log-button {
 		margin-left: 6px;
 	}
-	#black-wrapper #log-wrapper {
+	#log-wrapper {
 		box-shadow: 2px 2px 5px black;
 		background-color: #1d1d1d;
 		display: none;
 		min-width: 768px;
 		width: 100%;
 	}
-	#black-wrapper #log {
+	#log {
 		margin: 0 auto;
+	    padding-left: 1rem;
 		width: 768px;
 	}
